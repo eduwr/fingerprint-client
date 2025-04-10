@@ -3,11 +3,30 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter frontend dev",
-    "build": "pnpm --filter frontend build",
-    "start": "pnpm --filter frontend start"
+    "dev": "concurrently \"pnpm --filter frontend dev\" \"cd packages/backend && go run main.go\"",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:backend": "cd packages/backend && go run main.go",
+    "build": "pnpm --parallel build",
+    "build:frontend": "pnpm --filter frontend build",
+    "build:backend": "cd packages/backend && make build",
+    "start": "pnpm --parallel start",
+    "start:frontend": "pnpm --filter frontend start",
+    "start:backend": "cd packages/backend && make run",
+    "test": "pnpm --parallel test",
+    "test:frontend": "pnpm --filter frontend test",
+    "test:backend": "cd packages/backend && make test",
+    "lint": "pnpm --parallel lint",
+    "lint:frontend": "pnpm --filter frontend lint",
+    "lint:backend": "cd packages/backend && make lint",
+    "format": "pnpm --parallel format",
+    "format:frontend": "pnpm --filter frontend format",
+    "format:backend": "cd packages/backend && make format",
+    "setup": "pnpm install && cd packages/backend && go mod tidy"
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 } 

@@ -8,20 +8,19 @@ import (
 func main() {
 	app := fiber.New()
 
-	// CORS middleware
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
 		AllowHeaders: "Content-Type,Authorization",
 	}))
 
-	// Health check endpoint
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
 			"status": "ok",
 		})
 	})
 
-	// Start the server
-	app.Listen(":8080")
-} 
+	if err := app.Listen(":8081"); err != nil {
+		panic(err)
+	}
+}
