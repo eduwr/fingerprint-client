@@ -1,19 +1,13 @@
 {
-  "name": "fingerprint-client",
+  "name": "fingerprint-monorepo",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev": "pnpm --filter frontend dev",
+    "build": "pnpm --filter frontend build",
+    "start": "pnpm --filter frontend start"
   },
-  "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "typescript": "~5.7.2",
-    "vite": "^6.2.0"
-  },
-  "dependencies": {
-    "ua-parser-js": "^2.0.2"
-  }
-}
+  "workspaces": [
+    "packages/*"
+  ]
+} 
