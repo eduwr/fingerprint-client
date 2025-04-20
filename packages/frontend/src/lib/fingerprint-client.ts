@@ -1,9 +1,7 @@
-import { UAParser } from "ua-parser-js"
+import { UAParser, IResult } from "ua-parser-js"
 
-export interface FingerprintData {
-  userAgent: string
-  browser: string | undefined
-  os: string | undefined
+
+export type FingerprintData = {
   screen: string
   timezone: string
   language: string
@@ -12,13 +10,9 @@ export interface FingerprintData {
   canvas: string
 }
 
-export const getFingerprint = () => {
+export const getFingerprint = async () => {
   const uaResult = UAParser(window.navigator.userAgent)
-
   const data: FingerprintData = {
-    userAgent: uaResult.ua,
-    browser: uaResult.browser.name,
-    os: uaResult.os.name,
     screen: `${window.screen.width}x${window.screen.height}`,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     language: navigator.language,
@@ -26,6 +20,20 @@ export const getFingerprint = () => {
     gpu: getWebGLFingerprint(),
     canvas: getCanvasFingerprint(),
   }
+
+  console.log({ data })
+
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/fingerprint`, {
+    body: JSON.stringify(data),
+    method: "post",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+
+  await response.json()
+  console.log(response)
+
   return data
 }
 

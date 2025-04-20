@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"pnpm --filter frontend dev\" \"cd packages/backend && go run main.go\"",
+    "dev": "concurrently \"pnpm --filter frontend dev\" \"cd packages/backend && ~/go/bin/air\"",
     "dev:frontend": "pnpm --filter frontend dev",
-    "dev:backend": "cd packages/backend && go run main.go",
+    "dev:backend": "cd packages/backend && ~/go/bin/air",
     "build": "pnpm --parallel build",
     "build:frontend": "pnpm --filter frontend build",
     "build:backend": "cd packages/backend && make build",
@@ -21,7 +21,7 @@
     "format": "pnpm --parallel format",
     "format:frontend": "pnpm --filter frontend format",
     "format:backend": "cd packages/backend && make format",
-    "setup": "pnpm install && cd packages/backend && go mod tidy"
+    "setup": "pnpm install && cd packages/backend && go mod tidy && go install github.com/cosmtrek/air@latest"
   },
   "workspaces": [
     "packages/*"
