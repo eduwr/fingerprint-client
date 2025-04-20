@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
 	"github.com/eduwr/fingerprint/backend/models"
-	"github.com/go-playground/validator/v10"
+
+	"github.com/eduwr/fingerprint/backend/lib"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -16,29 +18,35 @@ type ValidationError struct {
 
 func HandleFingerprint(c *fiber.Ctx) error {
 	var data models.FingerprintData
-	validate := validator.New()
+	validate := lib.NewValidator()
 
 	if err := c.BodyParser(&data); err != nil {
-		log.Printf("Error parsing request body: %v", err)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Invalid request body",
-			"details": err.Error(),
-		})
+		log.Printf("Error parsing request body")
+		return &fiber.Error{
+			Code:    fiber.ErrBadRequest.Code,
+			Message: fiber.ErrBadRequest.Message,
+		}
 	}
 
-	if err := validate.Struct(data); err != nil {
-		var errors []ValidationError
-		for _, err := range err.(validator.ValidationErrors) {
-			errors = append(errors, ValidationError{
-				Field:   strings.ToLower(err.Field()),
-				Message: err.Tag(),
-			})
+	if errs := validate.Validate(data); len(errs) > 0 {
+		errMsgs := make([]string, 0)
+
+		for _, err := range errs {
+			errMsgs = append(errMsgs, fmt.Sprintf(
+				"Field '%s' with value '%v' failed validation: %s (rule: %s)",
+				err.Field,
+				err.Value,
+				err.Message,
+				err.Tag,
+			))
 		}
-		log.Printf("Validation errors: %+v", errors)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Validation failed",
-			"details": errors,
-		})
+
+		println(strings.Join(errMsgs, "\n"))
+
+		return &fiber.Error{
+			Code:    fiber.ErrBadRequest.Code,
+			Message: fiber.ErrBadRequest.Message,
+		}
 	}
 
 	log.Printf("Received fingerprint data: %+v", data)
